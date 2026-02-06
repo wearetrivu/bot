@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '../hooks/useAuth'
 
 export default function Login() {
@@ -9,6 +9,11 @@ export default function Login() {
     const [loading, setLoading] = useState(false)
 
     const { signInWithEmail, signUpWithEmail } = useAuth()
+
+    useEffect(() => {
+        const theme = localStorage.getItem('revot-theme') || 'dark'
+        document.body.className = theme === 'light' ? 'light-theme' : ''
+    }, [])
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -56,9 +61,9 @@ export default function Login() {
                             style={{
                                 padding: '0.75rem',
                                 borderRadius: '0.5rem',
-                                background: 'rgba(255, 255, 255, 0.05)',
+                                background: 'var(--input-bg)',
                                 border: '1px solid var(--border-color)',
-                                color: 'white',
+                                color: 'var(--text-primary)',
                                 outline: 'none',
                                 transition: 'border-color 0.2s'
                             }}
@@ -76,9 +81,9 @@ export default function Login() {
                             style={{
                                 padding: '0.75rem',
                                 borderRadius: '0.5rem',
-                                background: 'rgba(255, 255, 255, 0.05)',
+                                background: 'var(--input-bg)',
                                 border: '1px solid var(--border-color)',
-                                color: 'white',
+                                color: 'var(--text-primary)',
                                 outline: 'none'
                             }}
                             placeholder="••••••••"

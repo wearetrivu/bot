@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
 import ReactMarkdown from 'react-markdown'
-import { Send, LogOut, MessageSquare, Bot, User, Plus, Edit2, Check, X, Trash2 } from 'lucide-react'
+import { Send, LogOut, MessageSquare, Bot, User, Plus, Edit2, Check, X, Trash2, Sun, Moon } from 'lucide-react'
 
 // Webhook URL provided by user
 const WEBHOOK_URL = "https://n8n.srv1176776.hstgr.cloud/webhook/84aef1ae-2f12-4d0a-85c9-907a79b3690f/chat"
@@ -15,9 +15,10 @@ export default function ChatInterface() {
     const [messages, setMessages] = useState([])
     const [input, setInput] = useState('')
     const [loading, setLoading] = useState(false)
-    const [initialLoad, setInitialLoad] = useState(false) // Changed to false as we don't auto-load history immediately
+    const [initialLoad, setInitialLoad] = useState(false)
     const [editingSessionId, setEditingSessionId] = useState(null)
     const [editTitle, setEditTitle] = useState('')
+    const [theme, setTheme] = useState(localStorage.getItem('revot-theme') || 'dark')
 
     const messagesEndRef = useRef(null)
 
@@ -28,6 +29,15 @@ export default function ChatInterface() {
     useEffect(() => {
         if (messages.length) scrollToBottom()
     }, [messages])
+
+    useEffect(() => {
+        document.body.className = theme === 'light' ? 'light-theme' : ''
+        localStorage.setItem('revot-theme', theme)
+    }, [theme])
+
+    const toggleTheme = () => {
+        setTheme(prev => prev === 'dark' ? 'light' : 'dark')
+    }
 
     // Load sessions on mount
     useEffect(() => {
@@ -201,13 +211,33 @@ export default function ChatInterface() {
     return (
         <div style={{ display: 'flex', height: '100vh', background: 'var(--bg-color)' }}>
             {/* Sidebar */}
-            <div style={{ width: '280px', background: 'var(--bg-secondary)', borderRight: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column' }} className="sidebar">
+            <div style={{ width: '280px', background: 'var(--sidebar-bg)', borderRight: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column' }} className="sidebar">
                 <div style={{ padding: '1.5rem', borderBottom: '1px solid var(--border-color)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
-                        <div style={{ width: '32px', height: '32px', background: 'var(--accent-color)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <Bot size={20} color="white" />
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                            <div style={{ width: '32px', height: '32px', background: 'var(--accent-color)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <Bot size={20} color="white" />
+                            </div>
+                            <span style={{ fontWeight: 600, fontSize: '1.1rem', color: 'var(--text-primary)' }}>Revot</span>
                         </div>
-                        <span style={{ fontWeight: 600, fontSize: '1.1rem' }}>Revot</span>
+                        <button 
+                            onClick={toggleTheme}
+                            style={{ 
+                                background: 'none', 
+                                border: 'none', 
+                                padding: '8px', 
+                                cursor: 'pointer', 
+                                color: 'var(--text-secondary)',
+                                borderRadius: '8px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                transition: 'background 0.2s'
+                            }}
+                            className="theme-toggle"
+                        >
+                            {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+                        </button>
                     </div>
 
                     <button
@@ -265,9 +295,9 @@ export default function ChatInterface() {
                                             value={editTitle}
                                             onChange={e => setEditTitle(e.target.value)}
                                             style={{
-                                                background: 'rgba(0,0,0,0.2)',
-                                                border: 'none',
-                                                color: 'white',
+                                                background: 'var(--bg-color)',
+                                                border: '1px solid var(--border-color)',
+                                                color: 'var(--text-primary)',
                                                 width: '100%',
                                                 outline: 'none',
                                                 fontSize: '0.9rem',
@@ -466,7 +496,7 @@ export default function ChatInterface() {
                                 flex: 1,
                                 background: 'transparent',
                                 border: 'none',
-                                color: 'white',
+                                color: 'var(--text-primary)',
                                 fontSize: '1rem',
                                 outline: 'none',
                                 padding: '0.5rem'
